@@ -1,5 +1,13 @@
 import axios, { AxiosError } from 'axios';
-import { UploadDocumentParams, DocumentUploadResponse, ErrorResponse } from '@/types/document';
+import { 
+  UploadDocumentParams, 
+  DocumentUploadResponse, 
+  ErrorResponse,
+  DocumentListResponse,
+  DocumentFilter,
+  Document,
+  UpdateDocumentParams
+} from '@/types/document';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
@@ -44,5 +52,94 @@ export const uploadDocument = async (params: UploadDocumentParams): Promise<Docu
       }
     }
     throw new Error('アップロード中にエラーが発生しました');
+  }
+};
+
+export const getDocuments = async (filters?: DocumentFilter): Promise<DocumentListResponse> => {
+  try {
+    const params = new URLSearchParams();
+    
+    if (filters?.title) params.append('title', filters.title);
+    if (filters?.category) params.append('category', filters.category);
+    if (filters?.tags) filters.tags.forEach(tag => params.append('tags', tag));
+    if (filters?.author) params.append('author', filters.author);
+    if (filters?.created_after) params.append('created_after', filters.created_after);
+    if (filters?.created_before) params.append('created_before', filters.created_before);
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.page_size) params.append('page_size', filters.page_size.toString());
+
+    const response = await axios.get<DocumentListResponse>(
+      `${API_URL}/api/v1/documents/?${params.toString()}`
+    );
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.data?.detail) {
+        throw new Error(axiosError.response.data.detail);
+      }
+    }
+    throw new Error('文書一覧の取得中にエラーが発生しました');
+  }
+};
+
+export const getDocument = async (documentId: string): Promise<Document> => {
+  try {
+    const response = await axios.get<Document>(
+      `${API_URL}/api/v1/documents/${documentId}`
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.status === 404) {
+        throw new Error('文書が見つかりません');
+      } else if (axiosError.response?.data?.detail) {
+        throw new Error(axiosError.response.data.detail);
+      }
+    }
+    throw new Error('文書の取得中にエラーが発生しました');
+  }
+};
+
+export const updateDocument = async (
+  documentId: string, 
+  params: UpdateDocumentParams
+): Promise<Document> => {
+  try {
+    const response = await axios.put<Document>(
+      `${API_URL}/api/v1/documents/${documentId}`,
+      params
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.status === 404) {
+        throw new Error('文書が見つかりません');
+      } else if (axiosError.response?.status === 400) {
+        throw new Error('無効な入力データです');
+      } else if (axiosError.response?.data?.detail) {
+        throw new Error(axiosError.response.data.detail);
+      }
+    }
+    throw new Error('文書の更新中にエラーが発生しました');
+  }
+};
+
+export const deleteDocument = async (documentId: string): Promise<void> => {
+  try {
+    await axios.delete(`${API_URL}/api/v1/documents/${documentId}`);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const axiosError = error as AxiosError<ErrorResponse>;
+      if (axiosError.response?.status === 404) {
+        throw new Error('文書が見つかりません');
+      } else if (axiosError.response?.data?.detail) {
+        throw new Error(axiosError.response.data.detail);
+      }
+    }
+    throw new Error('文書の削除中にエラーが発生しました');
   }
 };
