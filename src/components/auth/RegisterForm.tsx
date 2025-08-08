@@ -22,8 +22,8 @@ import type { RegisterInput } from '@/types/auth'
 const registerSchema = z.object({
   email: z.string().email('有効なメールアドレスを入力してください'),
   name: z.string().min(1, '名前を入力してください'),
-  password: z.string().min(6, 'パスワードは6文字以上で入力してください'),
-  password_confirmation: z.string().min(6, '確認用パスワードを入力してください'),
+  password: z.string().min(8, 'パスワードは8文字以上で入力してください'),
+  password_confirmation: z.string().min(8, '確認用パスワードを入力してください'),
 }).refine(data => data.password === data.password_confirmation, {
   message: 'パスワードが一致しません',
   path: ['password_confirmation'],
@@ -72,7 +72,12 @@ export function RegisterForm() {
           toast.error(detail || '登録に失敗しました')
         }
       } else if (axiosError.response?.status === 422) {
-        toast.error('入力内容に誤りがあります。確認してください。')
+        const detail = axiosError.response?.data?.detail
+        if (detail) {
+          toast.error(`入力エラー: ${detail}`)
+        } else {
+          toast.error('パスワードは8文字以上で入力してください')
+        }
       } else {
         toast.error('登録に失敗しました。もう一度お試しください')
       }
