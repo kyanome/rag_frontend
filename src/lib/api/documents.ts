@@ -1,15 +1,13 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
+import axiosInstance from '@/lib/axios';
 import { 
   UploadDocumentParams, 
   DocumentUploadResponse, 
-  ErrorResponse,
   DocumentListResponse,
   DocumentFilter,
   Document,
   UpdateDocumentParams
 } from '@/types/document';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
 export const uploadDocument = async (params: UploadDocumentParams): Promise<DocumentUploadResponse> => {
   const formData = new FormData();
@@ -22,8 +20,8 @@ export const uploadDocument = async (params: UploadDocumentParams): Promise<Docu
   if (params.description) formData.append('description', params.description);
 
   try {
-    const response = await axios.post<DocumentUploadResponse>(
-      `${API_URL}/api/v1/documents/`,
+    const response = await axiosInstance.post<DocumentUploadResponse>(
+      '/api/v1/documents/',
       formData,
       {
         headers: {
@@ -42,7 +40,7 @@ export const uploadDocument = async (params: UploadDocumentParams): Promise<Docu
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+      const axiosError = error;
       if (axiosError.response?.data?.detail) {
         throw new Error(axiosError.response.data.detail);
       } else if (axiosError.response?.status === 413) {
@@ -68,14 +66,14 @@ export const getDocuments = async (filters?: DocumentFilter): Promise<DocumentLi
     if (filters?.page) params.append('page', filters.page.toString());
     if (filters?.page_size) params.append('page_size', filters.page_size.toString());
 
-    const response = await axios.get<DocumentListResponse>(
-      `${API_URL}/api/v1/documents/?${params.toString()}`
+    const response = await axiosInstance.get<DocumentListResponse>(
+      `/api/v1/documents/?${params.toString()}`
     );
 
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+      const axiosError = error;
       if (axiosError.response?.data?.detail) {
         throw new Error(axiosError.response.data.detail);
       }
@@ -86,13 +84,13 @@ export const getDocuments = async (filters?: DocumentFilter): Promise<DocumentLi
 
 export const getDocument = async (documentId: string): Promise<Document> => {
   try {
-    const response = await axios.get<Document>(
-      `${API_URL}/api/v1/documents/${documentId}`
+    const response = await axiosInstance.get<Document>(
+      `/api/v1/documents/${documentId}`
     );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+      const axiosError = error;
       if (axiosError.response?.status === 404) {
         throw new Error('文書が見つかりません');
       } else if (axiosError.response?.data?.detail) {
@@ -108,14 +106,14 @@ export const updateDocument = async (
   params: UpdateDocumentParams
 ): Promise<Document> => {
   try {
-    const response = await axios.put<Document>(
-      `${API_URL}/api/v1/documents/${documentId}`,
+    const response = await axiosInstance.put<Document>(
+      `/api/v1/documents/${documentId}`,
       params
     );
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+      const axiosError = error;
       if (axiosError.response?.status === 404) {
         throw new Error('文書が見つかりません');
       } else if (axiosError.response?.status === 400) {
@@ -130,10 +128,10 @@ export const updateDocument = async (
 
 export const deleteDocument = async (documentId: string): Promise<void> => {
   try {
-    await axios.delete(`${API_URL}/api/v1/documents/${documentId}`);
+    await axiosInstance.delete(`/api/v1/documents/${documentId}`);
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+      const axiosError = error;
       if (axiosError.response?.status === 404) {
         throw new Error('文書が見つかりません');
       } else if (axiosError.response?.data?.detail) {

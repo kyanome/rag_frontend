@@ -8,7 +8,6 @@ import { cn } from '@/lib/utils';
 interface FileDropzoneProps {
   onFileSelect: (file: File) => void;
   selectedFile: File | null;
-  acceptedFormats?: string[];
   maxSize?: number; // in bytes
   disabled?: boolean;
 }
@@ -16,7 +15,6 @@ interface FileDropzoneProps {
 const FileDropzone: React.FC<FileDropzoneProps> = ({
   onFileSelect,
   selectedFile,
-  acceptedFormats = ['.pdf', '.doc', '.docx', '.txt', '.csv', '.md'],
   maxSize = 100 * 1024 * 1024, // 100MB
   disabled = false,
 }) => {
