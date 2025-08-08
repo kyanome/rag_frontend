@@ -33,18 +33,23 @@ export class AuthClient {
   }
   
   static async register(data: RegisterInput): Promise<AuthResponse> {
-    // Register the user
-    await axiosInstance.post('/api/v1/auth/register', {
-      email: data.email,
-      name: data.name,
-      password: data.password,
-    })
-    
-    // After successful registration, automatically login
-    return this.login({
-      email: data.email,
-      password: data.password,
-    })
+    try {
+      // Register the user
+      await axiosInstance.post('/api/v1/auth/register', {
+        email: data.email,
+        name: data.name,
+        password: data.password,
+      })
+      
+      // After successful registration, automatically login
+      return this.login({
+        email: data.email,
+        password: data.password,
+      })
+    } catch (error) {
+      // Re-throw the error to be handled by the component
+      throw error
+    }
   }
   
   static async logout(): Promise<void> {

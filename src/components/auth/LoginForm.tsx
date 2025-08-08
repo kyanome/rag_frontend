@@ -54,9 +54,14 @@ export function LoginForm() {
     } catch (error) {
       console.error('Login error:', error)
       
-      const axiosError = error as { response?: { status: number } }
+      const axiosError = error as { response?: { status: number; data?: { detail?: string } } }
       if (axiosError.response?.status === 401) {
         toast.error('メールアドレスまたはパスワードが正しくありません')
+      } else if (axiosError.response?.status === 400) {
+        const detail = axiosError.response?.data?.detail
+        toast.error(detail || 'リクエストに問題があります')
+      } else if (axiosError.response?.status === 422) {
+        toast.error('入力内容に誤りがあります。確認してください。')
       } else {
         toast.error('ログインに失敗しました。もう一度お試しください')
       }

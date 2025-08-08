@@ -62,11 +62,17 @@ export function RegisterForm() {
       const axiosError = error as { response?: { status: number; data?: { detail?: string } } }
       if (axiosError.response?.status === 400) {
         const detail = axiosError.response?.data?.detail
-        if (detail?.includes('already exists')) {
-          toast.error('このメールアドレスは既に登録されています')
+        if (detail && (detail.includes('already exists') || detail.includes('User with email'))) {
+          toast.error('このメールアドレスは既に登録されています。ログインページへ移動してください。')
+          // Optionally redirect to login after a delay
+          setTimeout(() => {
+            router.push('/login')
+          }, 2000)
         } else {
           toast.error(detail || '登録に失敗しました')
         }
+      } else if (axiosError.response?.status === 422) {
+        toast.error('入力内容に誤りがあります。確認してください。')
       } else {
         toast.error('登録に失敗しました。もう一度お試しください')
       }
