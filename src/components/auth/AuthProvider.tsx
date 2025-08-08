@@ -24,7 +24,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       try {
         // Generate CSRF token on app load
-        if (typeof window \!== 'undefined') {
+        if (typeof window !== 'undefined') {
           TokenManager.generateCSRFToken()
         }
         
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
     
     // Only run once on mount
-    if (\!initComplete) {
+    if (!initComplete) {
       initAuth()
     }
   }, [setUser, setTokens, setLoading, logout, setError, clearError, initComplete])
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // Handle visibility change (tab focus)
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (\!document.hidden) {
+      if (!document.hidden) {
         // Check token validity when tab becomes visible
         const accessToken = TokenManager.getAccessToken()
         if (accessToken && TokenManager.isTokenExpired(accessToken)) {

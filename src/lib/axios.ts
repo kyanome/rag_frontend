@@ -97,7 +97,7 @@ axiosInstance.interceptors.response.use(
     }
     
     // Handle 401 with token refresh
-    if (error.response?.status === 401 && \!originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
       
       const tokens = useAuthStore.getState().tokens
@@ -117,7 +117,7 @@ axiosInstance.interceptors.response.use(
         // Start refresh process
         TokenManager.setRefreshingState(true)
         
-        if (\!refreshPromise) {
+        if (!refreshPromise) {
           refreshPromise = axios.post(
             `${API_BASE_URL}/api/v1/auth/refresh`,
             { refresh_token: tokens.refresh_token }
@@ -150,7 +150,7 @@ axiosInstance.interceptors.response.use(
           TokenManager.clearTokens()
           
           // Only redirect if we're in the browser
-          if (typeof window \!== 'undefined') {
+          if (typeof window !== 'undefined') {
             window.location.href = '/login'
           }
           

@@ -13,7 +13,7 @@ export class TokenManager {
   private static tokenCache: { [key: string]: string | undefined } = {}
   
   static setTokens(tokens: AuthTokens): void {
-    if (\!tokens) {
+    if (!tokens) {
       console.error('TokenManager.setTokens called with undefined tokens')
       return
     }
@@ -40,7 +40,7 @@ export class TokenManager {
     this.tokenCache[REFRESH_TOKEN_KEY] = refresh_token
     
     // Fallback to localStorage only if cookies are disabled
-    if (typeof window \!== 'undefined' && \!navigator.cookieEnabled) {
+    if (typeof window !== 'undefined' && !navigator.cookieEnabled) {
       try {
         localStorage.setItem(ACCESS_TOKEN_KEY, access_token)
         localStorage.setItem(REFRESH_TOKEN_KEY, refresh_token)
@@ -77,7 +77,7 @@ export class TokenManager {
     }
     
     // Fallback to localStorage
-    if (typeof window \!== 'undefined' && \!navigator.cookieEnabled) {
+    if (typeof window !== 'undefined' && !navigator.cookieEnabled) {
       const localToken = localStorage.getItem(ACCESS_TOKEN_KEY)
       if (localToken) {
         this.tokenCache[ACCESS_TOKEN_KEY] = localToken
@@ -100,7 +100,7 @@ export class TokenManager {
       return cookieToken
     }
     
-    if (typeof window \!== 'undefined' && \!navigator.cookieEnabled) {
+    if (typeof window !== 'undefined' && !navigator.cookieEnabled) {
       const localToken = localStorage.getItem(REFRESH_TOKEN_KEY)
       if (localToken) {
         this.tokenCache[REFRESH_TOKEN_KEY] = localToken
@@ -119,7 +119,7 @@ export class TokenManager {
     // Clear cache
     this.tokenCache = {}
     
-    if (typeof window \!== 'undefined') {
+    if (typeof window !== 'undefined') {
       localStorage.removeItem(ACCESS_TOKEN_KEY)
       localStorage.removeItem(REFRESH_TOKEN_KEY)
       localStorage.removeItem('auth-storage')
