@@ -1,9 +1,8 @@
-import { AxiosError } from 'axios';
+import axios from 'axios';
 import axiosInstance from '@/lib/axios';
 import { 
   UploadDocumentParams, 
   DocumentUploadResponse, 
-  ErrorResponse,
   DocumentListResponse,
   DocumentFilter,
   Document,
@@ -40,8 +39,8 @@ export const uploadDocument = async (params: UploadDocumentParams): Promise<Docu
 
     return response.data;
   } catch (error) {
-    if ((error as any).isAxiosError || (error as any).response) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+    if (axios.isAxiosError(error)) {
+      const axiosError = error;
       if (axiosError.response?.data?.detail) {
         throw new Error(axiosError.response.data.detail);
       } else if (axiosError.response?.status === 413) {
@@ -73,8 +72,8 @@ export const getDocuments = async (filters?: DocumentFilter): Promise<DocumentLi
 
     return response.data;
   } catch (error) {
-    if ((error as any).isAxiosError || (error as any).response) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+    if (axios.isAxiosError(error)) {
+      const axiosError = error;
       if (axiosError.response?.data?.detail) {
         throw new Error(axiosError.response.data.detail);
       }
@@ -90,8 +89,8 @@ export const getDocument = async (documentId: string): Promise<Document> => {
     );
     return response.data;
   } catch (error) {
-    if ((error as any).isAxiosError || (error as any).response) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+    if (axios.isAxiosError(error)) {
+      const axiosError = error;
       if (axiosError.response?.status === 404) {
         throw new Error('文書が見つかりません');
       } else if (axiosError.response?.data?.detail) {
@@ -113,8 +112,8 @@ export const updateDocument = async (
     );
     return response.data;
   } catch (error) {
-    if ((error as any).isAxiosError || (error as any).response) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+    if (axios.isAxiosError(error)) {
+      const axiosError = error;
       if (axiosError.response?.status === 404) {
         throw new Error('文書が見つかりません');
       } else if (axiosError.response?.status === 400) {
@@ -131,8 +130,8 @@ export const deleteDocument = async (documentId: string): Promise<void> => {
   try {
     await axiosInstance.delete(`/api/v1/documents/${documentId}`);
   } catch (error) {
-    if ((error as any).isAxiosError || (error as any).response) {
-      const axiosError = error as AxiosError<ErrorResponse>;
+    if (axios.isAxiosError(error)) {
+      const axiosError = error;
       if (axiosError.response?.status === 404) {
         throw new Error('文書が見つかりません');
       } else if (axiosError.response?.data?.detail) {

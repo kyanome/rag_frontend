@@ -1,6 +1,7 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 import { useAuthStore } from '@/stores/auth.store'
 import { TokenManager } from './auth/token'
+import type { AuthTokens } from '@/types/auth'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
@@ -68,7 +69,7 @@ axiosInstance.interceptors.request.use(
 )
 
 // Response interceptor with improved refresh logic
-let refreshPromise: Promise<any> | null = null
+let refreshPromise: Promise<AxiosResponse<AuthTokens>> | null = null
 
 axiosInstance.interceptors.response.use(
   (response) => response,
@@ -129,7 +130,7 @@ axiosInstance.interceptors.response.use(
         
         try {
           const response = await refreshPromise
-          const newTokens = response.data.tokens || response.data
+          const newTokens = response.data
           
           // Update tokens
           useAuthStore.getState().setTokens(newTokens)
@@ -188,4 +189,3 @@ if (typeof window !== 'undefined') {
 }
 
 export default axiosInstance
-EOF < /dev/null

@@ -16,22 +16,28 @@ export function useAccessibleToast() {
     document.body.appendChild(liveRegion)
 
     // Override toast methods to announce to screen readers
-    const originalSuccess = toast.success
-    const originalError = toast.error
-    const originalInfo = toast.info
+    const originalSuccess = toast.success.bind(toast)
+    const originalError = toast.error.bind(toast)
+    const originalInfo = toast.info.bind(toast)
 
-    toast.success = (message: string, options?: any) => {
-      liveRegion.textContent = `成功: ${message}`
+    toast.success = (message, options) => {
+      if (typeof message === 'string') {
+        liveRegion.textContent = `成功: ${message}`
+      }
       return originalSuccess(message, options)
     }
 
-    toast.error = (message: string, options?: any) => {
-      liveRegion.textContent = `エラー: ${message}`
+    toast.error = (message, options) => {
+      if (typeof message === 'string') {
+        liveRegion.textContent = `エラー: ${message}`
+      }
       return originalError(message, options)
     }
 
-    toast.info = (message: string, options?: any) => {
-      liveRegion.textContent = `情報: ${message}`
+    toast.info = (message, options) => {
+      if (typeof message === 'string') {
+        liveRegion.textContent = `情報: ${message}`
+      }
       return originalInfo(message, options)
     }
 
@@ -56,4 +62,3 @@ export function SkipNavigation() {
     </a>
   )
 }
-EOF < /dev/null

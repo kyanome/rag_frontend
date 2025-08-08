@@ -66,7 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
                 
                 const user = await AuthClient.getCurrentUser()
                 setUser(user)
-              } catch (refreshError) {
+              } catch {
                 logout()
                 TokenManager.clearTokens()
               }
@@ -117,4 +117,3 @@ export function AuthProvider({ children }: AuthProviderProps) {
   
   return <>{children}</>
 }
-EOF < /dev/null

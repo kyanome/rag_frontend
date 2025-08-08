@@ -156,4 +156,3 @@ export class TokenManager {
     return isRefreshing
   }
 }
-EOF < /dev/null
