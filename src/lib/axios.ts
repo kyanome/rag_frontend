@@ -175,7 +175,7 @@ axiosInstance.interceptors.response.use(
 )
 
 // Network status monitoring
-if (typeof window \!== 'undefined') {
+if (typeof window !== 'undefined') {
   window.addEventListener('online', () => {
     console.log('Network connection restored')
     useAuthStore.getState().clearError()
