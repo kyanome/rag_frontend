@@ -43,13 +43,14 @@ export function LoginForm() {
     try {
       const response = await AuthClient.login(data)
       
-      TokenManager.setTokens(response.tokens)
-      
-      login(response.user, response.tokens)
-      
-      toast.success('ログインに成功しました')
-      
-      router.push('/documents')
+      if (response?.tokens) {
+        TokenManager.setTokens(response.tokens)
+        login(response.user, response.tokens)
+        toast.success('ログインに成功しました')
+        router.push('/documents')
+      } else {
+        throw new Error('Invalid response from server')
+      }
     } catch (error) {
       console.error('Login error:', error)
       

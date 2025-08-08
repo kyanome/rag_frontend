@@ -48,13 +48,14 @@ export function RegisterForm() {
     try {
       const response = await AuthClient.register(data)
       
-      TokenManager.setTokens(response.tokens)
-      
-      login(response.user, response.tokens)
-      
-      toast.success('アカウントを作成しました')
-      
-      router.push('/documents')
+      if (response?.tokens) {
+        TokenManager.setTokens(response.tokens)
+        login(response.user, response.tokens)
+        toast.success('アカウントを作成しました')
+        router.push('/documents')
+      } else {
+        throw new Error('Invalid response from server')
+      }
     } catch (error) {
       console.error('Registration error:', error)
       

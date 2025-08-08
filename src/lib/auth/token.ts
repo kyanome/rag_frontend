@@ -6,6 +6,11 @@ const REFRESH_TOKEN_KEY = 'refresh_token'
 
 export class TokenManager {
   static setTokens(tokens: AuthTokens): void {
+    if (!tokens) {
+      console.error('TokenManager.setTokens called with undefined tokens')
+      return
+    }
+    
     const { access_token, refresh_token } = tokens
     
     Cookies.set(ACCESS_TOKEN_KEY, access_token, {
