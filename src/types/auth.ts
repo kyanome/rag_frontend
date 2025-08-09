@@ -3,8 +3,11 @@ export interface User {
   email: string
   name: string
   role: 'viewer' | 'editor' | 'admin'
+  is_active?: boolean
+  is_email_verified?: boolean
   created_at: string
   updated_at: string
+  last_login_at?: string | null
 }
 
 export interface LoginInput {
