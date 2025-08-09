@@ -7,6 +7,16 @@ import type {
   AuthTokens 
 } from '@/types/auth'
 
+export interface UpdateProfileInput {
+  name?: string
+  email?: string
+}
+
+export interface ChangePasswordInput {
+  current_password: string
+  new_password: string
+}
+
 export class AuthClient {
   static async login(data: LoginInput): Promise<AuthResponse> {
     const response = await axiosInstance.post('/api/v1/auth/login', {
@@ -67,5 +77,14 @@ export class AuthClient {
     })
     
     return response.data.tokens
+  }
+  
+  static async updateProfile(data: UpdateProfileInput): Promise<User> {
+    const response = await axiosInstance.put('/api/v1/auth/me', data)
+    return response.data
+  }
+  
+  static async changePassword(data: ChangePasswordInput): Promise<void> {
+    await axiosInstance.put('/api/v1/auth/me/password', data)
   }
 }
