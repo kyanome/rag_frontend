@@ -2,21 +2,29 @@
  * チャットメッセージアイテムコンポーネント
  */
 
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { User, Bot, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ChatMessage } from '@/types/rag';
 import { formatProcessingTime, getConfidenceLevelColor, getConfidenceLevelLabel } from '@/lib/api/rag';
 import { CitationCard } from './CitationCard';
+import { ParsedTextWithCitations } from './CitationInlineMarker';
+import { HighlightedMessage } from './CitationHighlighter';
 
 interface MessageItemProps {
   message: ChatMessage;
   isStreaming?: boolean;
+  enableCitationHighlight?: boolean;
 }
 
-export const MessageItem: FC<MessageItemProps> = ({ message, isStreaming = false }) => {
+export const MessageItem: FC<MessageItemProps> = ({ 
+  message, 
+  isStreaming = false,
+  enableCitationHighlight = true 
+}) => {
   const isUser = message.role === 'user';
   const isError = !!message.error;
+  const [highlightedCitation, setHighlightedCitation] = useState<number | null>(null);
 
   return (
     <div
@@ -63,14 +71,40 @@ export const MessageItem: FC<MessageItemProps> = ({ message, isStreaming = false
 
         {/* メッセージ内容 */}
         <div className="prose prose-sm dark:prose-invert max-w-none">
-          {message.content.split('\n').map((line, index) => (
-            <p key={index} className="mb-2">
-              {line}
-              {isStreaming && index === message.content.split('\n').length - 1 && (
-                <span className="inline-block w-2 h-4 ml-1 bg-gray-400 dark:bg-gray-600 animate-pulse" />
-              )}
-            </p>
-          ))}
+          {!isUser && message.citations && message.citations.length > 0 ? (
+            // AIの回答で引用がある場合は引用マーカーとハイライトを表示
+            enableCitationHighlight ? (
+              <HighlightedMessage
+                text={message.content}
+                citations={message.citations}
+                enableHighlight={true}
+                highlightColor="yellow"
+              />
+            ) : (
+              message.content.split('\n').map((line, index) => (
+                <p key={index} className="mb-2">
+                  <ParsedTextWithCitations
+                    text={line}
+                    citations={message.citations || []}
+                    onCitationClick={(citation, idx) => setHighlightedCitation(idx)}
+                  />
+                  {isStreaming && index === message.content.split('\n').length - 1 && (
+                    <span className="inline-block w-2 h-4 ml-1 bg-gray-400 dark:bg-gray-600 animate-pulse" />
+                  )}
+                </p>
+              ))
+            )
+          ) : (
+            // ユーザーメッセージまたは引用なしの場合は通常表示
+            message.content.split('\n').map((line, index) => (
+              <p key={index} className="mb-2">
+                {line}
+                {isStreaming && index === message.content.split('\n').length - 1 && (
+                  <span className="inline-block w-2 h-4 ml-1 bg-gray-400 dark:bg-gray-600 animate-pulse" />
+                )}
+              </p>
+            ))
+          )}
         </div>
 
         {/* 信頼度情報 */}
@@ -94,7 +128,12 @@ export const MessageItem: FC<MessageItemProps> = ({ message, isStreaming = false
             <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">参照文書:</h4>
             <div className="grid gap-2">
               {message.citations.map((citation, index) => (
-                <CitationCard key={index} citation={citation} index={index + 1} />
+                <CitationCard 
+                  key={index} 
+                  citation={citation} 
+                  index={index + 1}
+                  isHighlighted={highlightedCitation === index + 1}
+                />
               ))}
             </div>
           </div>
