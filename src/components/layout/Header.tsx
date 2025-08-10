@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { FileText, Upload, FolderOpen, LogOut, User, Settings, Key, Users, ChevronDown } from 'lucide-react';
+import { FileText, Upload, FolderOpen, LogOut, User, Settings, Key, Users, ChevronDown, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
@@ -67,6 +67,15 @@ const Header: React.FC = () => {
               >
                 <FolderOpen className="h-4 w-4" />
                 文書管理
+              </Link>
+              <Link 
+                href="/chat" 
+                className={`flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary ${
+                  pathname === '/chat' ? 'text-primary' : 'text-gray-600'
+                }`}
+              >
+                <MessageSquare className="h-4 w-4" />
+                AIチャット
               </Link>
             </nav>
             
