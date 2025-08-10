@@ -43,6 +43,8 @@ export const CitationInlineMarker: FC<CitationInlineMarkerProps> = ({
             )}
             onClick={onClick}
             aria-label={`引用 ${index}: ${citation.documentTitle}`}
+            data-citation-marker={index}
+            data-testid="citation-marker"
           >
             [{index}]
           </button>
